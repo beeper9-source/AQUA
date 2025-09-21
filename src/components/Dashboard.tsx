@@ -183,14 +183,21 @@ const PlayerRanking: React.FC = () => {
 const CourtUsage: React.FC = () => {
   const { courts, matches } = useTennisStore();
   
-  const courtStats = courts.map(court => {
-    const courtMatches = matches.filter(match => match.courtId === court.id);
-    return {
-      ...court,
-      matchCount: courtMatches.length,
-      totalDuration: courtMatches.reduce((sum, match) => sum + match.duration, 0)
-    };
-  }).sort((a, b) => b.matchCount - a.matchCount);
+  const courtStats = courts
+    .sort((a, b) => {
+      // 코트 이름에서 숫자 추출하여 정렬 (코트1, 코트2, ...)
+      const aNum = parseInt(a.name.replace(/[^\d]/g, '')) || 0;
+      const bNum = parseInt(b.name.replace(/[^\d]/g, '')) || 0;
+      return aNum - bNum;
+    })
+    .map(court => {
+      const courtMatches = matches.filter(match => match.courtId === court.id);
+      return {
+        ...court,
+        matchCount: courtMatches.length,
+        totalDuration: courtMatches.reduce((sum, match) => sum + match.duration, 0)
+      };
+    });
 
   if (courtStats.length === 0) {
     return (

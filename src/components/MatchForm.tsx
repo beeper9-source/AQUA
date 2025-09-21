@@ -205,11 +205,19 @@ export const MatchForm: React.FC<MatchFormProps> = ({ onClose, match }) => {
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
             >
               <option value="">코트를 선택하세요</option>
-              {courts.filter(c => c.isActive).map(court => (
-                <option key={court.id} value={court.id}>
-                  {court.name} ({court.surface})
-                </option>
-              ))}
+              {courts
+                .filter(c => c.isActive)
+                .sort((a, b) => {
+                  // 코트 이름에서 숫자 추출하여 정렬 (코트1, 코트2, ...)
+                  const aNum = parseInt(a.name.replace(/[^\d]/g, '')) || 0;
+                  const bNum = parseInt(b.name.replace(/[^\d]/g, '')) || 0;
+                  return aNum - bNum;
+                })
+                .map(court => (
+                  <option key={court.id} value={court.id}>
+                    {court.name} ({court.surface})
+                  </option>
+                ))}
             </select>
             {errors.courtId && (
               <p className="text-red-500 text-sm mt-1">{errors.courtId.message}</p>

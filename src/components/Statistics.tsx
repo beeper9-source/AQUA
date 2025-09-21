@@ -66,16 +66,23 @@ export const Statistics: React.FC = () => {
 
   // 코트별 사용률
   const courtUsage = React.useMemo(() => {
-    return courts.map(court => {
-      const courtMatches = matches.filter(match => match.courtId === court.id);
-      const totalDuration = courtMatches.reduce((sum, match) => sum + match.duration, 0);
-      return {
-        name: court.name,
-        matchCount: courtMatches.length,
-        totalDuration,
-        averageDuration: courtMatches.length > 0 ? totalDuration / courtMatches.length : 0
-      };
-    }).sort((a, b) => b.matchCount - a.matchCount);
+    return courts
+      .sort((a, b) => {
+        // 코트 이름에서 숫자 추출하여 정렬 (코트1, 코트2, ...)
+        const aNum = parseInt(a.name.replace(/[^\d]/g, '')) || 0;
+        const bNum = parseInt(b.name.replace(/[^\d]/g, '')) || 0;
+        return aNum - bNum;
+      })
+      .map(court => {
+        const courtMatches = matches.filter(match => match.courtId === court.id);
+        const totalDuration = courtMatches.reduce((sum, match) => sum + match.duration, 0);
+        return {
+          name: court.name,
+          matchCount: courtMatches.length,
+          totalDuration,
+          averageDuration: courtMatches.length > 0 ? totalDuration / courtMatches.length : 0
+        };
+      });
   }, [courts, matches]);
 
   // 선수별 통계

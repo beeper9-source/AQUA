@@ -215,11 +215,19 @@ export const MatchResultForm: React.FC<MatchResultFormProps> = ({ onClose, match
               className="w-full p-3 border border-ocean-200 rounded-lg focus:ring-2 focus:ring-ocean-500 focus:border-ocean-500 bg-white/80"
             >
               <option value="">코트를 선택하세요</option>
-              {courts.filter(court => court.isActive).map(court => (
-                <option key={court.id} value={court.id}>
-                  {court.name} ({court.location}) - {court.surface}
-                </option>
-              ))}
+              {courts
+                .filter(court => court.isActive)
+                .sort((a, b) => {
+                  // 코트 이름에서 숫자 추출하여 정렬 (코트1, 코트2, ...)
+                  const aNum = parseInt(a.name.replace(/[^\d]/g, '')) || 0;
+                  const bNum = parseInt(b.name.replace(/[^\d]/g, '')) || 0;
+                  return aNum - bNum;
+                })
+                .map(court => (
+                  <option key={court.id} value={court.id}>
+                    {court.name} ({court.location}) - {court.surface}
+                  </option>
+                ))}
             </select>
             {errors.courtId && (
               <p className="text-coral-500 text-sm mt-1">{errors.courtId.message}</p>
